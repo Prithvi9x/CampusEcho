@@ -1,7 +1,7 @@
 # CampusEcho - An Alumni Association Platform
 
 A modern web application for alumni to connect, share ideas, and give back to their alma mater.
-CAMPUSECHO
+
 
 ## Features
 
