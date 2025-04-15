@@ -2,7 +2,7 @@
 
 A modern web application for alumni to connect, share ideas, and give back to their alma mater.
 
-![Alumni Association](https://via.placeholder.com/800x400?text=Alumni+Association+Platform)
+[Alumni Association]
 
 ## Features
 
