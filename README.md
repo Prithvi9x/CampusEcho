@@ -2,7 +2,7 @@
 
 A modern web application for alumni to connect, share ideas, and give back to their alma mater.
 
-[Alumni Association]
+Alumni Association
 
 ## Features
 
@@ -27,7 +27,7 @@ A modern web application for alumni to connect, share ideas, and give back to th
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/alumni-association.git
+   git clone https://github.com/yourusername/CampusEcho.git
    cd alumni-association
    ```
 
@@ -56,7 +56,7 @@ A modern web application for alumni to connect, share ideas, and give back to th
 ## Project Structure
 
 ```
-alumni-association/
+CampusEcho/
 ├── app.py                  # Main application file
 ├── requirements.txt        # Python dependencies
 ├── templates/              # HTML templates
