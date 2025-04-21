@@ -83,7 +83,8 @@ def signup():
             'email': email,
             'password': hashed_password,
             'name': name,
-            'created_at': datetime.now()
+            'created_at': datetime.now(),
+             'comments': []
         }
         db.users.insert_one(user_data)
         flash('Registration successful! Please login.')
@@ -136,6 +137,16 @@ def dashboard():
             'full_name': author['name'] if author else 'Unknown User',
             'email': author['email'] if author else ''
         }
+
+        if 'comments' in post:
+                    for comment in post['comments']:
+                        comment['user_id'] = str(comment['user_id'])
+                        # Get comment author information
+                        comment_author = db.users.find_one({'_id': ObjectId(comment['user_id'])})
+                        comment['author'] = {
+                            'full_name': comment_author['name'] if comment_author else 'Unknown User',
+                            'email': comment_author['email'] if comment_author else ''
+                        }
     
     return render_template('dashboard.html', questions=questions, posts=posts, upcoming_events=upcoming_events)
 
@@ -210,6 +221,67 @@ def create_post():
         db.posts.insert_one(post_data)
         flash('Post created successfully!')
     return redirect(url_for('dashboard'))
+@app.route('/like_post/<post_id>', methods=['POST'])
+@login_required
+def like_post(post_id):
+    try:
+        post = db.posts.find_one({'_id': ObjectId(post_id)})
+        if not post:
+            flash('Post not found')
+            return redirect(url_for('dashboard'))
+
+        user_id = ObjectId(current_user.id)
+        interested_users = post.get('interested_users', [])
+
+        # Check if user already liked the post
+        user_liked = any(str(user) == str(user_id) for user in interested_users)
+
+        if user_liked:
+            # Unlike the post
+            db.posts.update_one(
+                {'_id': ObjectId(post_id)},
+                {'$pull': {'interested_users': user_id}}
+            )
+        else:
+            # Like the post
+            db.posts.update_one(
+                {'_id': ObjectId(post_id)},
+                {'$addToSet': {'interested_users': user_id}}
+            )
+
+        return redirect(url_for('dashboard'))
+    except Exception as e:
+        flash(f'Error: {str(e)}')
+        return redirect(url_for('dashboard'))
+
+@app.route('/comment_post/<post_id>', methods=['POST'])
+@login_required
+def comment_post(post_id):
+    try:
+        content = request.form.get('comment')
+        if not content:
+            flash('Comment cannot be empty')
+            return redirect(url_for('dashboard'))
+
+        # Create comment object
+        comment_data = {
+            'user_id': ObjectId(current_user.id),
+            'content': content,
+            'created_at': datetime.now()
+        }
+
+        # Add comment to post
+        db.posts.update_one(
+            {'_id': ObjectId(post_id)},
+            {'$push': {'comments': comment_data}}
+        )
+
+        flash('Comment added successfully')
+        return redirect(url_for('dashboard'))
+    except Exception as e:
+        flash(f'Error: {str(e)}')
+        return redirect(url_for('dashboard'))
+
 
 @app.route('/donate', methods=['GET', 'POST'])
 @login_required

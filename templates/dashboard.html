@@ -103,13 +103,42 @@
                         </div>
                     </div>
                     <p class="mb-3">{{ post.content }}</p>
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-outline-primary btn-sm me-2">
-                            <i class="fas fa-thumbs-up me-1"></i>Like
-                        </button>
-                        <button class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-comment me-1"></i>Comment
-                        </button>
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Like button with form -->
+                        <form action="{{ url_for('like_post', post_id=post._id) }}" method="POST" class="me-2">
+                            <button type="submit" class="btn {% if current_user.id|string in post.interested_users|map('string')|list %}btn-primary{% else %}btn-outline-primary{% endif %} btn-sm">
+                                <i class="fas fa-thumbs-up me-1"></i>
+                                Like {% if post.interested_users %}({{ post.interested_users|length }}){% endif %}
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Comment section -->
+                    <div class="comments-section mt-3">
+                        <!-- Display existing comments -->
+                        {% if post.comments %}
+                        <div class="existing-comments mb-3">
+                            {% for comment in post.comments %}
+                            <div class="comment-card p-2 mb-2 bg-light rounded">
+                                <div class="d-flex align-items-center mb-1">
+                                    <small class="fw-bold">{{ comment.author.full_name if comment.author else 'User' }}</small>
+                                    <small class="text-muted ms-auto">{{ comment.created_at.strftime('%d %b %Y') }}</small>
+                                </div>
+                                <p class="mb-0">{{ comment.content }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Comment form -->
+                        <form action="{{ url_for('comment_post', post_id=post._id) }}" method="POST">
+                            <div class="input-group">
+                                <input type="text" class="form-control form-control-sm" name="comment" placeholder="Write a comment...">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 {% endfor %}
