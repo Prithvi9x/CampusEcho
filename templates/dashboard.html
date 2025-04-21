@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CampusEcho{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-question-circle text-primary me-2"></i>Ask a Question
+                </h3>
+                <form method="POST" action="{{ url_for('ask_question') }}">
+                    <div class="mb-3">
+                        <input type="text" class="form-control form-control-lg" name="title" placeholder="What's your question?" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="content" rows="3" placeholder="Provide more details..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Post Question
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Share Post Section -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-share-alt text-primary me-2"></i>Share a Post
+                </h3>
+                <form method="POST" action="{{ url_for('create_post') }}">
+                    <div class="mb-3">
+                        <input type="text" class="form-control form-control-lg" name="title" placeholder="What's on your mind?" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="content" rows="3" placeholder="Share your thoughts..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Share Post
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recent Questions Section -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-comments text-primary me-2"></i>Recent Questions
+                </h3>
+                {% for question in questions %}
+                <div class="question-card mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://via.placeholder.com/40" class="rounded-circle me-3" alt="Profile">
+                        <div>
+                            <h5 class="mb-1">{{ question.title }}</h5>
+                            <p class="text-muted mb-0">Asked by {{ question.author.full_name }}</p>
+                        </div>
+                    </div>
+                    <p class="mb-3">{{ question.content }}</p>
+                    <div class="answers-section">
+                        {% for answer in question.answers %}
+                        <div class="answer-card mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="https://via.placeholder.com/30" class="rounded-circle me-2" alt="Profile">
+                                <div>
+                                    <h6 class="mb-0">{{ answer.author.full_name }}</h6>
+                                    <small class="text-muted">{{ answer.created_at.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                            </div>
+                            <p class="mb-0">{{ answer.content }}</p>
+                        </div>
+                        {% endfor %}
+                        <form method="POST" action="{{ url_for('answer_question', question_id=question._id) }}" class="mt-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="content" placeholder="Write an answer...">
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="fas fa-reply"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Posts Section -->
+        <div class="card">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-newspaper text-primary me-2"></i>Recent Posts
+                </h3>
+                {% for post in posts %}
+                <div class="post-card mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://via.placeholder.com/40" class="rounded-circle me-3" alt="Profile">
+                        <div>
+                            <h5 class="mb-1">{{ post.title }}</h5>
+                            <p class="text-muted mb-0">Posted by {{ post.author.full_name }}</p>
+                        </div>
+                    </div>
+                    <p class="mb-3">{{ post.content }}</p>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-primary btn-sm me-2">
+                            <i class="fas fa-thumbs-up me-1"></i>Like
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-comment me-1"></i>Comment
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Quick Links Section -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-link text-primary me-2"></i>Quick Links
+                </h3>
+                <div class="list-group">
+                    <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-user me-2 text-primary"></i>My Profile
+                    </a>
+                    <a href="{{ url_for('donate') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-hand-holding-usd me-2 text-primary"></i>Donate
+                    </a>
+                    <a href="{{ url_for('events') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>Events Calendar
+                    </a>
+                    <a href="{{ url_for('resources') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-book me-2 text-primary"></i>Resources
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events Section -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-calendar text-primary me-2"></i>Upcoming Events
+                </h3>
+                <div class="event-list">
+                    {% for event in upcoming_events %}
+                    <div class="event-item d-flex align-items-center mb-3">
+                        <div class="event-date text-center me-3">
+                            <div class="month text-primary">{{ event.date.strftime('%b')|upper }}</div>
+                            <div class="day h4 mb-0">{{ event.date.strftime('%d') }}</div>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-clock me-1"></i>{{ event.date.strftime('%I:%M %p') }}
+                                <i class="fas fa-map-marker-alt ms-2 me-1"></i>{{ event.location }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not upcoming_events %}
+                    <p class="text-muted text-center mb-0">No upcoming events</p>
+                    {% endif %}
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('events') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-alt me-1"></i>View All Events
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alumni Directory Stats Section -->
+        <div class="card">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-chart-bar text-primary me-2"></i>Alumni Directory Stats
+                </h3>
+                <div class="row text-center">
+                    <div class="col-6 mb-4">
+                        <div class="stat-card p-3">
+                            <h2 class="mb-0 text-primary">1,234</h2>
+                            <p class="text-muted mb-0">Total Alumni</p>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="stat-card p-3">
+                            <h2 class="mb-0 text-primary">2</h2>
+                            <p class="text-muted mb-0">Active Members</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="{{ url_for('directory') }}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-search me-2"></i>Browse Directory
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.question-card, .post-card {
+    padding: 20px;
+    background: var(--light-bg);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.answer-card {
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    margin-left: 20px;
+}
+
+.stat-card {
+    background: var(--light-bg);
+    border-radius: 10px;
+}
+
+.event-date {
+    min-width: 60px;
+    padding: 10px;
+    background: var(--light-bg);
+    border-radius: 10px;
+}
+
+.event-date .month {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.list-group-item {
+    border: none;
+    margin-bottom: 5px;
+    background: var(--light-bg);
+    border-radius: 8px !important;
+}
+
+.list-group-item:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.list-group-item:hover i {
+    color: white !important;
+}
+</style>
+{% endblock %} 
