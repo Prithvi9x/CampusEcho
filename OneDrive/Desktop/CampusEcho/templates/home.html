@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to CampusEcho{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 text-center mb-5">
+        <h1 class="display-4 fw-bold" style="background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Welcome to Our Alumni Association
+        </h1>
+        <p class="lead text-muted">Connect, Share, and Grow with Your Alumni Network</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle mb-4">
+                    <i class="fas fa-users fa-3x text-primary"></i>
+                </div>
+                <h3 class="card-title h4">Network</h3>
+                <p class="card-text text-muted">Connect with fellow alumni, share experiences, and build professional relationships.</p>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary mt-3">Go to Dashboard</a>
+                {% else %}
+                <a href="{{ url_for('signup') }}" class="btn btn-outline-primary mt-3">Join Network</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle mb-4">
+                    <i class="fas fa-lightbulb fa-3x text-primary"></i>
+                </div>
+                <h3 class="card-title h4">Share Ideas</h3>
+                <p class="card-text text-muted">Post your ideas, collaborate on projects, and find like-minded alumni to work with.</p>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary mt-3">Go to Dashboard</a>
+                {% else %}
+                <a href="{{ url_for('signup') }}" class="btn btn-outline-primary mt-3">Start Sharing</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle mb-4">
+                    <i class="fas fa-graduation-cap fa-3x text-primary"></i>
+                </div>
+                <h3 class="card-title h4">Give Back</h3>
+                <p class="card-text text-muted">Support your alma mater through donations and mentorship opportunities.</p>
+                <a href="{{ url_for('donate') }}" class="btn btn-outline-primary mt-3">Donate Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-calendar-alt text-primary me-2"></i>Latest Events
+                </h3>
+                <div class="event-list">
+                    {% for event in upcoming_events %}
+                    <div class="event-item d-flex align-items-center mb-3">
+                        <div class="event-date text-center me-3">
+                            <div class="month text-primary">{{ event.date.strftime('%b')|upper }}</div>
+                            <div class="day h4 mb-0">{{ event.date.strftime('%d') }}</div>
+                        </div>
+                        <div class="event-details">
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-clock me-1"></i>{{ event.date.strftime('%I:%M %p') }}
+                                <i class="fas fa-map-marker-alt ms-2 me-1"></i>{{ event.location }}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if not upcoming_events %}
+                    <p class="text-muted text-center mb-0">No upcoming events</p>
+                    {% endif %}
+                </div>
+                {% if current_user.is_authenticated %}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('events') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-alt me-1"></i>View All Events
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('signup') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user-plus me-1"></i>Sign Up to View Events
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-star text-primary me-2"></i>Success Stories
+                </h3>
+                <div class="success-story mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="Profile">
+                        <div>
+                            <h5 class="mb-1">Rakesh Khanna</h5>
+                            <p class="text-muted mb-0">Class of 2015</p>
+                        </div>
+                    </div>
+                    <p class="mb-0">Now CEO at Tech Innovations, leading innovation in AI and machine learning.</p>
+                </div>
+                <div class="success-story">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="Profile">
+                        <div>
+                            <h5 class="mb-1">Priya Shah</h5>
+                            <p class="text-muted mb-0">Class of 2018</p>
+                        </div>
+                    </div>
+                    <p class="mb-0">Leading Research at Global Labs, making breakthroughs in sustainable energy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12 text-center">
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-user-plus me-2"></i>Join Our Network
+            </a>
+        {% else %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--light-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.event-date {
+    min-width: 60px;
+    padding: 10px;
+    background: var(--light-bg);
+    border-radius: 10px;
+}
+
+.event-date .month {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.success-story {
+    padding: 20px;
+    background: var(--light-bg);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.success-story:last-child {
+    margin-bottom: 0;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Resources - CampusEcho{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-plus-circle text-primary me-2"></i>Add New Resource
+                </h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Resource Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="link" class="form-label">Resource Link</label>
+                        <input type="url" class="form-control" id="link" name="link" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="Career">Career Development</option>
+                            <option value="Education">Education</option>
+                            <option value="Networking">Networking</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Resource
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-book text-primary me-2"></i>Resource Library
+                </h3>
+                <div class="resource-filters mb-4">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary active" data-category="all">All</button>
+                        <button class="btn btn-outline-primary" data-category="Career">Career</button>
+                        <button class="btn btn-outline-primary" data-category="Education">Education</button>
+                        <button class="btn btn-outline-primary" data-category="Networking">Networking</button>
+                        <button class="btn btn-outline-primary" data-category="Technology">Technology</button>
+                        <button class="btn btn-outline-primary" data-category="Other">Other</button>
+                    </div>
+                </div>
+                {% for resource in resources %}
+                <div class="resource-card mb-4" data-category="{{ resource.category }}">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="resource-icon me-3">
+                            <i class="fas fa-link fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">{{ resource.title }}</h5>
+                            <span class="badge bg-primary">{{ resource.category }}</span>
+                        </div>
+                    </div>
+                    <p class="mb-2">{{ resource.description }}</p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="{{ resource.link }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>Visit Resource
+                        </a>
+                        <small class="text-muted">
+                            <i class="fas fa-user me-1"></i>Posted by {{ resource.author.full_name }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-info-circle text-primary me-2"></i>About Resources
+                </h3>
+                <p class="mb-3">Share valuable resources with your fellow alumni to help them grow professionally and personally.</p>
+                <div class="resource-categories">
+                    <h5 class="mb-3">Categories:</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-briefcase text-primary me-2"></i>Career Development
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-graduation-cap text-primary me-2"></i>Education
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-users text-primary me-2"></i>Networking
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-laptop-code text-primary me-2"></i>Technology
+                        </li>
+                        <li>
+                            <i class="fas fa-ellipsis-h text-primary me-2"></i>Other
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.resource-filters .btn');
+    const resourceCards = document.querySelectorAll('.resource-card');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+
+            const category = this.dataset.category;
+
+            resourceCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+
+<style>
+.resource-card {
+    padding: 20px;
+    background: var(--light-bg);
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+
+.resource-card:hover {
+    transform: translateY(-2px);
+}
+
+.resource-icon {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.resource-filters .btn-group {
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.resource-filters .btn {
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+.resource-categories li {
+    padding: 10px;
+    background: var(--light-bg);
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.resource-categories li:hover {
+    transform: translateX(5px);
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Events - CampusEcho{% endblock %}
+
+{% block head %}
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.10/index.global.min.js'></script>
+
+<style>
+    #calendar {
+        max-width: 100%;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        height: 600px;
+    }
+    
+    .event-card {
+        padding: 20px;
+        background: var(--light-bg);
+        border-radius: 10px;
+        transition: transform 0.2s;
+        margin-bottom: 15px;
+    }
+
+    .event-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .event-date {
+        min-width: 60px;
+        padding: 10px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .event-date .month {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .has-events {
+        background-color: rgba(var(--primary-rgb), 0.1) !important;
+        font-weight: bold;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .fc .fc-button-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .fc .fc-button-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+    }
+
+    .fc-event {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-calendar-plus text-primary me-2"></i>Create New Event
+                </h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Event Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="time" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="time" name="time" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Event
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-calendar-alt text-primary me-2"></i>Upcoming Events
+                </h3>
+                {% for event in events %}
+                <div class="event-card mb-4" id="event-{{ event._id }}">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="event-date text-center me-3">
+                            <div class="month text-primary">{{ event.date.strftime('%b')|upper }}</div>
+                            <div class="day h4 mb-0">{{ event.date.strftime('%d') }}</div>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">{{ event.title }}</h5>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-clock me-1"></i>{{ event.date.strftime('%I:%M %p') }}
+                                <i class="fas fa-map-marker-alt ms-2 me-1"></i>{{ event.location }}
+                            </p>
+                        </div>
+                    </div>
+                    <p class="mb-2">{{ event.description }}</p>
+                    <small class="text-muted">
+                        <i class="fas fa-user me-1"></i>Posted by {{ event.author.full_name }}
+                    </small>
+                </div>
+                {% endfor %}
+                {% if not events %}
+                <p class="text-muted text-center">No upcoming events</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    if (calendarEl) {
+        var rawEvents = JSON.parse(calendarEl.dataset.events);
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            plugins: [ 'dayGrid' ],
+            height: 600,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth'
+            },
+            events: rawEvents.map(function(event) {
+                return {
+                    title: event.title,
+                    start: event.date,
+                    allDay: true
+                };
+            })
+        });
+        calendar.render();
+    } else {
+        console.error('Calendar element not found');
+    }
+});
+</script>
+{% endblock %} 
