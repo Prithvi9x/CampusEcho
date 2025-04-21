@@ -40,7 +40,7 @@ def load_user(user_id):
 # Routes
 @app.route('/')
 def home():
-    # Get upcoming events (next 3)
+    # Keep your existing code for upcoming_events
     upcoming_events = list(db.events.find({'date': {'$gte': datetime.now()}}).sort('date', 1).limit(3))
     for event in upcoming_events:
         event['_id'] = str(event['_id'])
@@ -50,8 +50,20 @@ def home():
             'full_name': author['name'] if author else 'Unknown User',
             'email': author['email'] if author else ''
         }
-    
-    return render_template('home.html', upcoming_events=upcoming_events)
+
+    # Get success stories from all users
+    success_stories = []
+    users_with_stories = db.users.find({'success_stories': {'$exists': True, '$ne': []}})
+    for user in users_with_stories:
+        for story in user.get('success_stories', []):
+            story['user_name'] = user['name']
+            success_stories.append(story)
+
+    # Sort success stories by creation date, most recent first
+    success_stories.sort(key=lambda x: x.get('created_at', datetime.min), reverse=True)
+
+    return render_template('home.html', upcoming_events=upcoming_events, success_stories=success_stories)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -386,6 +398,31 @@ def directory():
         user.pop('password', None)
         user.pop('email', None)
     return render_template('directory.html', users=users)
+
+@app.route('/add_success_story', methods=['POST'])
+@login_required
+def add_success_story():
+    title = request.form.get('title')
+    content = request.form.get('content')
+
+    if title and content:
+        success_story = {
+            'title': title,
+            'content': content,
+            'created_at': datetime.now()
+        }
+
+        db.users.update_one(
+            {'_id': ObjectId(current_user.id)},
+            {'$push': {'success_stories': success_story}}
+        )
+        flash('Success story added successfully!')
+    else:
+        flash('Title and content are required')
+
+    return redirect(url_for('profile'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True) 

@@ -103,33 +103,31 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card h-100">
+
+        <div class="card mb-4">
             <div class="card-body p-4">
                 <h3 class="card-title h4 mb-4">
                     <i class="fas fa-star text-primary me-2"></i>Success Stories
                 </h3>
-                <div class="success-story mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="Profile">
-                        <div>
-                            <h5 class="mb-1">Rakesh Khanna</h5>
-                            <p class="text-muted mb-0">Class of 2015</p>
+                {% if success_stories %}
+                    {% for story in success_stories %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ story.title }}</h5>
+                                <p class="card-text">{{ story.content }}</p>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted">Posted by {{ story.user_name }}</small>
+                                    <small class="text-muted ms-auto">{{ story.created_at.strftime('%d %b %Y') }}</small>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <p class="mb-0">Now CEO at Tech Innovations, leading innovation in AI and machine learning.</p>
-                </div>
-                <div class="success-story">
-                    <div class="d-flex align-items-center mb-3">
-                        <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="Profile">
-                        <div>
-                            <h5 class="mb-1">Priya Shah</h5>
-                            <p class="text-muted mb-0">Class of 2018</p>
-                        </div>
-                    </div>
-                    <p class="mb-0">Leading Research at Global Labs, making breakthroughs in sustainable energy.</p>
-                </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center">No success stories have been shared yet.</p>
+                {% endif %}
             </div>
         </div>
+
     </div>
 </div>
 

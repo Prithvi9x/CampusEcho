@@ -60,14 +60,46 @@
         </div>
 
         <!-- Success Stories Section -->
-        <div class="card mt-4">
-            <div class="card-body">
-                <h4>My Success Stories</h4>
-                <div class="text-center">
-                    <button class="btn btn-outline-primary">
-                        <i class="fas fa-plus"></i> Add Success Story
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-star text-primary me-2"></i>Add Success Story
+                </h3>
+                <form action="{{ url_for('add_success_story') }}" method="post">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Your Story</label>
+                        <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Add Success Story
                     </button>
-                </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display Your Success Stories -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title h4 mb-4">
+                    <i class="fas fa-star text-primary me-2"></i>Your Success Stories
+                </h3>
+                {% if user.success_stories %}
+                    {% for story in user.success_stories %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ story.title }}</h5>
+                                <p class="card-text">{{ story.content }}</p>
+                                <small class="text-muted">{{ story.created_at.strftime('%d %b %Y') }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">You haven't shared any success stories yet.</p>
+                {% endif %}
             </div>
         </div>
 
